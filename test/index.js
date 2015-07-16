@@ -14,7 +14,7 @@ describe("Dispatcher", function() {
       assert(dispatcher instanceof EventEmitter);
     });
   });
-  describe("#subscribe(address: string, subscription: function): void", function() {
+  describe("#register(address: string, subscription: function): void", function() {
     it("works", function() {
       var dispatcher = new Dispatcher();
       var spy1 = sinon.spy();
@@ -22,14 +22,14 @@ describe("Dispatcher", function() {
       var spy3 = sinon.spy();
       var spy4 = sinon.spy();
 
-      // subscribe
-      dispatcher.subscribe("/foo", spy1);
-      dispatcher.subscribe("/foo", spy2);
-      dispatcher.subscribe("/bar", spy3);
-      dispatcher.subscribe("baz/", spy4);
+      // register
+      dispatcher.register("/foo", spy1);
+      dispatcher.register("/foo", spy2);
+      dispatcher.register("/bar", spy3);
+      dispatcher.register("baz/", spy4);
       // expect to be ignored
-      dispatcher.subscribe("/foo", spy1);
-      dispatcher.subscribe("/bar", "not function");
+      dispatcher.register("/foo", spy1);
+      dispatcher.register("/bar", "not function");
 
       assert(spy1.callCount === 0);
       assert(spy2.callCount === 0);
@@ -64,17 +64,17 @@ describe("Dispatcher", function() {
       assert(spy4.callCount === 0);
     });
   });
-  describe("#subscribe(subscription: { delegate: function }): void", function() {
+  describe("#register(subscription: { delegate: function }): void", function() {
     it("works", function() {
       var dispatcher = new Dispatcher();
       var spy1 = { delegate: sinon.spy() };
       var spy2 = { delegate: sinon.spy() };
 
-      // subscribe
-      dispatcher.subscribe(spy1);
-      dispatcher.subscribe(spy2);
+      // register
+      dispatcher.register(spy1);
+      dispatcher.register(spy2);
       // expect to be ignored
-      dispatcher.subscribe(spy1);
+      dispatcher.register(spy1);
 
       assert(spy1.delegate.callCount === 0);
       assert(spy2.delegate.callCount === 0);
@@ -106,7 +106,7 @@ describe("Dispatcher", function() {
       assert(spy2.delegate.callCount === 2);
     });
   });
-  describe("#unsubscribe(address: string, subscription: function): void", function() {
+  describe("#unregister(address: string, subscription: function): void", function() {
     it("works", function() {
       var dispatcher = new Dispatcher();
       var spy1 = sinon.spy();
@@ -114,17 +114,17 @@ describe("Dispatcher", function() {
       var spy3 = sinon.spy();
       var spy4 = sinon.spy();
 
-      // subscribe
-      dispatcher.subscribe("/foo", spy1);
-      dispatcher.subscribe("/foo", spy2);
-      dispatcher.subscribe("/bar", spy3);
-      dispatcher.subscribe("baz/", spy4);
+      // register
+      dispatcher.register("/foo", spy1);
+      dispatcher.register("/foo", spy2);
+      dispatcher.register("/bar", spy3);
+      dispatcher.register("baz/", spy4);
 
-      // unsubscribe
-      dispatcher.unsubscribe("/foo", spy2);
-      dispatcher.unsubscribe("/bar", spy3);
-      dispatcher.unsubscribe("/bar", "not function");
-      dispatcher.unsubscribe("baz/", spy4);
+      // unregister
+      dispatcher.unregister("/foo", spy2);
+      dispatcher.unregister("/bar", spy3);
+      dispatcher.unregister("/bar", "not function");
+      dispatcher.unregister("baz/", spy4);
 
       assert(spy1.callCount === 0);
       assert(spy2.callCount === 0);
@@ -157,18 +157,18 @@ describe("Dispatcher", function() {
       assert(spy4.callCount === 0);
     });
   });
-  describe("#unsubscribe(subscription: { delegate: function }): void", function() {
+  describe("#unregister(subscription: { delegate: function }): void", function() {
     it("works", function() {
       var dispatcher = new Dispatcher();
       var spy1 = { delegate: sinon.spy() };
       var spy2 = { delegate: sinon.spy() };
 
-      // subscribe
-      dispatcher.subscribe(spy1);
-      dispatcher.subscribe(spy2);
+      // register
+      dispatcher.register(spy1);
+      dispatcher.register(spy2);
 
-      // unsubscribe
-      dispatcher.unsubscribe(spy2);
+      // unregister
+      dispatcher.unregister(spy2);
 
       assert(spy1.delegate.callCount === 0);
       assert(spy2.delegate.callCount === 0);
@@ -202,9 +202,9 @@ describe("Dispatcher", function() {
       var spy1 = { delegate: sinon.spy() };
       var spy2 = { delegate: sinon.spy() };
 
-      // subscribe
-      dispatcher.subscribe(spy1);
-      dispatcher.subscribe(spy2);
+      // register
+      dispatcher.register(spy1);
+      dispatcher.register(spy2);
 
       assert(spy1.delegate.callCount === 0);
       assert(spy2.delegate.callCount === 0);

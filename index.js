@@ -14,7 +14,7 @@ Dispatcher.prototype = Object.create(EventEmitter.prototype, {
   constructor: { value: Dispatcher, enumerable: false, writable: true, configurable: true },
 });
 
-Dispatcher.prototype.subscribe = function(address, subscription) {
+Dispatcher.prototype.register = function(address, subscription) {
   var index, delegator;
 
   if (typeof subscription === "undefined") {
@@ -47,7 +47,7 @@ Dispatcher.prototype.subscribe = function(address, subscription) {
   }
 };
 
-Dispatcher.prototype.unsubscribe = function(address, subscription) {
+Dispatcher.prototype.unregister = function(address, subscription) {
   var index;
 
   if (typeof subscription === "undefined") {

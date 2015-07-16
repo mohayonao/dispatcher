@@ -320,23 +320,35 @@ describe("Dispatcher", function() {
       assert(spy2.delegate.callCount === 2);
     });
   });
+});
+describe("Delegator", function() {
+  describe("constructor()", function() {
+    it("works", function() {
+      var delegator = new Dispatcher.Delegator();
+
+      assert(delegator instanceof Dispatcher.Delegator);
+    });
+  });
   describe("#delegate(address: string, data: any): void", function() {
     it("works", function() {
       var dispatcher = new Dispatcher();
+      var delegator = new Dispatcher.Delegator();
       var spy1 = sinon.spy();
       var spy2 = sinon.spy();
       var spy3 = sinon.spy();
 
-      dispatcher["/foo"] = spy1;
-      dispatcher["/bar"] = spy2;
-      dispatcher["baz/"] = spy3;
+      dispatcher.register(delegator);
+
+      delegator["/foo"] = spy1;
+      delegator["/bar"] = spy2;
+      delegator["baz/"] = spy3;
 
       assert(spy1.callCount === 0);
       assert(spy2.callCount === 0);
       assert(spy3.callCount === 0);
 
       // dispatch /foo
-      dispatcher.delegate("/foo", "data1");
+      dispatcher.dispatch("/foo", "data1");
 
       assert(spy1.callCount === 1);
       assert(spy1.args[0][0] === "data1");
@@ -344,7 +356,7 @@ describe("Dispatcher", function() {
       assert(spy3.callCount === 0);
 
       // dispatch /bar
-      dispatcher.delegate("/bar", "data2");
+      dispatcher.dispatch("/bar", "data2");
 
       assert(spy1.callCount === 1);
       assert(spy2.callCount === 1);
@@ -352,14 +364,14 @@ describe("Dispatcher", function() {
       assert(spy3.callCount === 0);
 
       // dispatch /baz
-      dispatcher.delegate("/baz", "data3");
+      dispatcher.dispatch("/baz", "data3");
 
       assert(spy1.callCount === 1);
       assert(spy2.callCount === 1);
       assert(spy3.callCount === 0);
 
       // dispatch baz/
-      dispatcher.delegate("baz/", "data4");
+      dispatcher.dispatch("baz/", "data4");
 
       assert(spy1.callCount === 1);
       assert(spy2.callCount === 1);

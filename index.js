@@ -85,13 +85,23 @@ Dispatcher.prototype.dispatch = function(address, data) {
   }
 };
 
-Dispatcher.prototype.delegate = function(address, data) {
+function Delegator() {
+  EventEmitter.call(this);
+}
+
+Delegator.prototype = Object.create(EventEmitter.prototype, {
+  constructor: { value: Delegator, enumerable: false, writable: true, configurable: true },
+});
+
+Delegator.prototype.delegate = function(address, data) {
   if (typeof address === "string" && address[0] === "/") {
     if (typeof this[address] === "function") {
       this[address](data);
     }
   }
 };
+
+Dispatcher.Delegator = Delegator;
 
 function indexOfSubscription(subscriptions, address, subscription) {
   var i, imax;

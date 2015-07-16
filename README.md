@@ -20,25 +20,33 @@ npm install @mohayonao/dispatcher
 #### Instance methods
 _Also implements methods from the interface [@mohayonao/event-emitter](https://github.com/mohayonao/event-emitter)._
 
-- `subscribe(address: string, subscription: function): void`
-- `subscribe({ delegate: function }): void`
-- `unsubscribe(address: string, subscription: function): void`
-- `unsubscribe({ delegate: function }): void`
+- `register(address: string, subscription: function): void`
+- `register(subscription: function): void`
+- `register({ delegate: function }): void`
+- `unregister(address: string, subscription: function): void`
+- `unregister(subscription: function): void`
+- `unregister({ delegate: function }): void`
 - `dispatch(address: string, data: any): void`
-- `delegate(address: string, data: any): void`
 
-`address: string` must start with "/".
+### Dispatcher.Delegator
+- `constructor()`
+
+#### Instance methods
+_Also implements methods from the interface [@mohayonao/event-emitter](https://github.com/mohayonao/event-emitter)._
+
+- `delegate(address: string, data: any): void`
 
 ## Messaging Protocol
 ```
 +--------+                  +-------------+
-| source | <-- subscribe -- | destination |
+| source | <-- register --- | destination |
 |        | --- dispatch --> |             |
 +--------+                  +-------------+
 
 interface souce {
-  subscribe(address: string, subscription: function): void;
-  subscribe({ delegate: function }): void;
+  register(address: string, subscription: function): void;
+  register(subscription: function): void;
+  register({ delegate: function }): void;
   dispatch(address: string, data: any): void;
 }
 
@@ -47,16 +55,18 @@ interface destination {
 }
 ```
 
+`address: string` must start with "/".
+
 ```js
 let publisher = new Dispatcher();
-let subscriber = new Dispatcher();
+let subscriber = new Dispatcher.Delegator();
 
 // define action of address
 subscriber["/message/view"] = (message) => {
   console.log(`received: ${message}`);
 };
 
-publisher.subscribe(subscriber);
+publisher.register(subscriber);
 
 publisher.dispatch("/message/view", "hello!");
 // -> call subscriber.delegate("/message/view", "hello!")

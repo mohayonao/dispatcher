@@ -3,6 +3,7 @@
 var EventEmitter = require("@mohayonao/event-emitter");
 
 var SUBSCRIPTIONS = typeof Symbol !== "undefined" ? Symbol("SUBSCRIPTIONS") : "_@mohayonao/dispatcher:SUBSCRIPTIONS";
+var EVERYTHING = typeof Symbol !== "undefined" ? Symbol("EVERYTHING") : "_@mohayonao/dispatcher:EVERYTHING";
 
 function Dispatcher() {
   EventEmitter.call(this);
@@ -19,7 +20,7 @@ Dispatcher.prototype.register = function(address, subscription) {
 
   if (typeof subscription === "undefined") {
     subscription = address;
-    address = "";
+    address = EVERYTHING;
   }
 
   index = indexOfSubscription(this[SUBSCRIPTIONS], address, subscription);
@@ -30,16 +31,26 @@ Dispatcher.prototype.register = function(address, subscription) {
 
   if (subscription && typeof subscription.delegate === "function") {
     delegator = subscription;
-  } else if (typeof address === "string" && address[0] === "/" && typeof subscription === "function") {
-    delegator = {
-      address: address,
-      subscription: subscription,
-      delegate: function(_address, _data) {
-        if (_address === address) {
-          subscription(_data);
-        }
-      },
-    };
+  } else if (typeof subscription === "function") {
+    if (typeof address === "string" && address[0] === "/") {
+      delegator = {
+        address: address,
+        subscription: subscription,
+        delegate: function(_address, _data) {
+          if (_address === address) {
+            subscription(_data, _address);
+          }
+        },
+      };
+    } else if (address === EVERYTHING) {
+      delegator = {
+        address: address,
+        subscription: subscription,
+        delegate: function(_address, _data) {
+          subscription(_data, _address);
+        },
+      };
+    }
   }
 
   if (delegator) {
@@ -52,7 +63,7 @@ Dispatcher.prototype.unregister = function(address, subscription) {
 
   if (typeof subscription === "undefined") {
     subscription = address;
-    address = "";
+    address = EVERYTHING;
   }
 
   index = indexOfSubscription(this[SUBSCRIPTIONS], address, subscription);

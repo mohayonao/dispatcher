@@ -18,8 +18,6 @@ npm install @mohayonao/dispatcher
 - `constructor()`
 
 #### Instance methods
-_Also implements methods from the interface [@mohayonao/event-emitter](https://github.com/mohayonao/event-emitter)._
-
 - `register(address: string, subscription: function): void`
 - `register(subscription: function): void`
 - `register({ delegate: function }): void`
@@ -32,9 +30,10 @@ _Also implements methods from the interface [@mohayonao/event-emitter](https://g
 - `constructor()`
 
 #### Instance methods
-_Also implements methods from the interface [@mohayonao/event-emitter](https://github.com/mohayonao/event-emitter)._
-
 - `delegate(address: string, data: any): void`
+
+### Dispatcher.Duplex
+- `constructor()`
 
 ## Messaging Protocol
 ```

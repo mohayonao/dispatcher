@@ -3,7 +3,7 @@ import EventEmitter from "@mohayonao/event-emitter";
 const SUBSCRIPTIONS = typeof Symbol !== "undefined" ? Symbol("SUBSCRIPTIONS") : "_@mohayonao/dispatcher:SUBSCRIPTIONS";
 const EVERYTHING = typeof Symbol !== "undefined" ? Symbol("EVERYTHING") : "_@mohayonao/dispatcher:EVERYTHING";
 
-class Dispatcher extends EventEmitter {
+export default class Dispatcher extends EventEmitter {
   constructor() {
     super();
 
@@ -11,42 +11,18 @@ class Dispatcher extends EventEmitter {
   }
 
   register(address, subscription) {
-    let index, delegator;
-
     if (typeof subscription === "undefined") {
       subscription = address;
       address = EVERYTHING;
     }
 
-    index = indexOfSubscription(this[SUBSCRIPTIONS], address, subscription);
+    let index = indexOfSubscription(this[SUBSCRIPTIONS], address, subscription);
 
     if (index !== -1) {
       return;
     }
 
-    if (subscription && typeof subscription.delegate === "function") {
-      delegator = subscription;
-    } else if (typeof subscription === "function") {
-      if (typeof address === "string" && address[0] === "/") {
-        delegator = {
-          address: address,
-          subscription: subscription,
-          delegate: function(_address, _data) {
-            if (_address === address) {
-              subscription(_data, _address);
-            }
-          },
-        };
-      } else if (address === EVERYTHING) {
-        delegator = {
-          address: address,
-          subscription: subscription,
-          delegate: function(_address, _data) {
-            subscription(_data, _address);
-          },
-        };
-      }
-    }
+    let delegator = buildDelegator(address, subscription);
 
     if (delegator) {
       this[SUBSCRIPTIONS].push(delegator);
@@ -54,14 +30,12 @@ class Dispatcher extends EventEmitter {
   }
 
   unregister(address, subscription) {
-    let index;
-
     if (typeof subscription === "undefined") {
       subscription = address;
       address = EVERYTHING;
     }
 
-    index = indexOfSubscription(this[SUBSCRIPTIONS], address, subscription);
+    let index = indexOfSubscription(this[SUBSCRIPTIONS], address, subscription);
 
     if (index !== -1) {
       this[SUBSCRIPTIONS].splice(index, 1);
@@ -69,34 +43,50 @@ class Dispatcher extends EventEmitter {
   }
 
   dispatch(address, data) {
-    let subscriptions, i, imax;
-
     if (typeof address === "string" && address[0] === "/") {
-      subscriptions = this[SUBSCRIPTIONS];
+      let subscriptions = this[SUBSCRIPTIONS];
 
-      for (i = 0, imax = subscriptions.length; i < imax; i++) {
+      for (let i = 0, imax = subscriptions.length; i < imax; i++) {
         subscriptions[i].delegate(address, data);
       }
     }
   }
 }
 
-class Delegator extends EventEmitter {
-  delegate(address, data) {
-    if (typeof address === "string" && address[0] === "/") {
-      if (typeof this[address] === "function") {
-        this[address](data);
-      }
-    }
+function buildDelegator(address, subscription) {
+  if (subscription && typeof subscription.delegate === "function") {
+    return subscription;
+  }
+
+  if (typeof subscription !== "function") {
+    return null;
+  }
+
+  if (typeof address === "string" && address[0] === "/") {
+    return {
+      address: address,
+      subscription: subscription,
+      delegate(_address, _data) {
+        if (_address === address) {
+          subscription(_data, _address);
+        }
+      },
+    };
+  }
+
+  if (address === EVERYTHING) {
+    return {
+      address: address,
+      subscription: subscription,
+      delegate(_address, _data) {
+        subscription(_data, _address);
+      },
+    };
   }
 }
 
-Dispatcher.Delegator = Delegator;
-
 function indexOfSubscription(subscriptions, address, subscription) {
-  let i, imax;
-
-  for (i = 0, imax = subscriptions.length; i < imax; i++) {
+  for (let i = 0, imax = subscriptions.length; i < imax; i++) {
     if (subscriptions[i] === subscription) {
       return i;
     }
@@ -107,5 +97,3 @@ function indexOfSubscription(subscriptions, address, subscription) {
 
   return -1;
 }
-
-export default Dispatcher;

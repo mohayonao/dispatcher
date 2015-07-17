@@ -1,26 +1,24 @@
-"use strict";
+import assert from "power-assert";
+import sinon from "sinon";
+import EventEmitter from "@mohayonao/event-emitter";
+import Dispatcher from "../src/Dispatcher";
 
-var assert = require("power-assert");
-var sinon = require("sinon");
-var EventEmitter = require("@mohayonao/event-emitter");
-var Dispatcher = require("../");
-
-describe("Dispatcher", function() {
-  describe("constructor()", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
+describe("Dispatcher", () => {
+  describe("constructor()", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
 
       assert(dispatcher instanceof Dispatcher);
       assert(dispatcher instanceof EventEmitter);
     });
   });
-  describe("#register(address: string, subscription: function): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = sinon.spy();
-      var spy2 = sinon.spy();
-      var spy3 = sinon.spy();
-      var spy4 = sinon.spy();
+  describe("#register(address: string, subscription: function): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = sinon.spy();
+      let spy2 = sinon.spy();
+      let spy3 = sinon.spy();
+      let spy4 = sinon.spy();
 
       // register
       dispatcher.register("/foo", spy1);
@@ -67,11 +65,11 @@ describe("Dispatcher", function() {
       assert(spy4.callCount === 0);
     });
   });
-  describe("#register(subscription: function): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = sinon.spy();
-      var spy2 = sinon.spy();
+  describe("#register(subscription: function): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = sinon.spy();
+      let spy2 = sinon.spy();
 
       // register
       dispatcher.register(spy1);
@@ -109,11 +107,11 @@ describe("Dispatcher", function() {
       assert(spy2.callCount === 2);
     });
   });
-  describe("#register(subscription: { delegate: function }): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = { delegate: sinon.spy() };
-      var spy2 = { delegate: sinon.spy() };
+  describe("#register(subscription: { delegate: function }): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = { delegate: sinon.spy() };
+      let spy2 = { delegate: sinon.spy() };
 
       // register
       dispatcher.register(spy1);
@@ -151,13 +149,13 @@ describe("Dispatcher", function() {
       assert(spy2.delegate.callCount === 2);
     });
   });
-  describe("#unregister(address: string, subscription: function): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = sinon.spy();
-      var spy2 = sinon.spy();
-      var spy3 = sinon.spy();
-      var spy4 = sinon.spy();
+  describe("#unregister(address: string, subscription: function): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = sinon.spy();
+      let spy2 = sinon.spy();
+      let spy3 = sinon.spy();
+      let spy4 = sinon.spy();
 
       // register
       dispatcher.register("/foo", spy1);
@@ -202,11 +200,11 @@ describe("Dispatcher", function() {
       assert(spy4.callCount === 0);
     });
   });
-  describe("#unregister(subscription: function): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = sinon.spy();
-      var spy2 = sinon.spy();
+  describe("#unregister(subscription: function): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = sinon.spy();
+      let spy2 = sinon.spy();
 
       // register
       dispatcher.register(spy1);
@@ -241,11 +239,11 @@ describe("Dispatcher", function() {
       assert(spy2.callCount === 0);
     });
   });
-  describe("#unregister(subscription: { delegate: function }): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = { delegate: sinon.spy() };
-      var spy2 = { delegate: sinon.spy() };
+  describe("#unregister(subscription: { delegate: function }): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = { delegate: sinon.spy() };
+      let spy2 = { delegate: sinon.spy() };
 
       // register
       dispatcher.register(spy1);
@@ -280,11 +278,11 @@ describe("Dispatcher", function() {
       assert(spy2.delegate.callCount === 0);
     });
   });
-  describe("#dispatch(address: string, data: any): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var spy1 = { delegate: sinon.spy() };
-      var spy2 = { delegate: sinon.spy() };
+  describe("#dispatch(address: string, data: any): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let spy1 = { delegate: sinon.spy() };
+      let spy2 = { delegate: sinon.spy() };
 
       // register
       dispatcher.register(spy1);
@@ -321,21 +319,21 @@ describe("Dispatcher", function() {
     });
   });
 });
-describe("Delegator", function() {
-  describe("constructor()", function() {
-    it("works", function() {
-      var delegator = new Dispatcher.Delegator();
+describe("Delegator", () => {
+  describe("constructor()", () => {
+    it("works", () => {
+      let delegator = new Dispatcher.Delegator();
 
       assert(delegator instanceof Dispatcher.Delegator);
     });
   });
-  describe("#delegate(address: string, data: any): void", function() {
-    it("works", function() {
-      var dispatcher = new Dispatcher();
-      var delegator = new Dispatcher.Delegator();
-      var spy1 = sinon.spy();
-      var spy2 = sinon.spy();
-      var spy3 = sinon.spy();
+  describe("#delegate(address: string, data: any): void", () => {
+    it("works", () => {
+      let dispatcher = new Dispatcher();
+      let delegator = new Dispatcher.Delegator();
+      let spy1 = sinon.spy();
+      let spy2 = sinon.spy();
+      let spy3 = sinon.spy();
 
       dispatcher.register(delegator);
 
